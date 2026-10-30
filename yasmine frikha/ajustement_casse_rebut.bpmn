@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="18.31.1">
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:participant id="Participant_1" name="Ajustement / casse / rebut" processRef="Process_1" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_1" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_1">
+      <bpmn:lane id="Lane_Mag" name="Magasinier">
+        <bpmn:flowNodeRef>Start_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Declarer</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Resp" name="Responsable stock">
+        <bpmn:flowNodeRef>Task_Valider</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_Approuve</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Sys" name="Système">
+        <bpmn:flowNodeRef>Gw_Validation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_MAJ</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Compta</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Histo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Termine</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Notifier</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HistoRefus</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Refuse</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Verifier</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_Donnees</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:exclusiveGateway id="Gw_Validation" name="Validation requise ?">
+      <bpmn:incoming>F6</bpmn:incoming>
+      <bpmn:outgoing>F8</bpmn:outgoing>
+      <bpmn:outgoing>F9</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_MAJ" name="Mettre à jour le stock">
+      <bpmn:incoming>F9</bpmn:incoming>
+      <bpmn:incoming>F11</bpmn:incoming>
+      <bpmn:outgoing>F13</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Compta" name="Transmettre la valorisation à la Comptabilité">
+      <bpmn:incoming>F13</bpmn:incoming>
+      <bpmn:outgoing>F14</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Histo" name="Enregistrer l’historique">
+      <bpmn:incoming>F14</bpmn:incoming>
+      <bpmn:outgoing>F15</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Termine" name="Ajustement terminé">
+      <bpmn:incoming>F15</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Task_Notifier" name="Notifier le refus">
+      <bpmn:incoming>F12</bpmn:incoming>
+      <bpmn:outgoing>F16</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_HistoRefus" name="Enregistrer le refus dans l’historique">
+      <bpmn:incoming>F16</bpmn:incoming>
+      <bpmn:outgoing>F17</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Refuse" name="Ajustement refusé">
+      <bpmn:incoming>F17</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="F4" sourceRef="Task_Declarer" targetRef="Task_Verifier" />
+    <bpmn:sequenceFlow id="F5" sourceRef="Task_Verifier" targetRef="Gw_Donnees" />
+    <bpmn:sequenceFlow id="F6" name="Oui" sourceRef="Gw_Donnees" targetRef="Gw_Validation" />
+    <bpmn:sequenceFlow id="F7" name="Non" sourceRef="Gw_Donnees" targetRef="Task_Declarer" />
+    <bpmn:sequenceFlow id="F8" name="Oui" sourceRef="Gw_Validation" targetRef="Task_Valider" />
+    <bpmn:sequenceFlow id="F9" name="Non" sourceRef="Gw_Validation" targetRef="Task_MAJ" />
+    <bpmn:sequenceFlow id="F10" sourceRef="Task_Valider" targetRef="Gw_Approuve" />
+    <bpmn:sequenceFlow id="F11" name="Oui" sourceRef="Gw_Approuve" targetRef="Task_MAJ" />
+    <bpmn:sequenceFlow id="F12" name="Non" sourceRef="Gw_Approuve" targetRef="Task_Notifier" />
+    <bpmn:sequenceFlow id="F13" sourceRef="Task_MAJ" targetRef="Task_Compta" />
+    <bpmn:sequenceFlow id="F14" sourceRef="Task_Compta" targetRef="Task_Histo" />
+    <bpmn:sequenceFlow id="F15" sourceRef="Task_Histo" targetRef="End_Termine" />
+    <bpmn:sequenceFlow id="F16" sourceRef="Task_Notifier" targetRef="Task_HistoRefus" />
+    <bpmn:sequenceFlow id="F17" sourceRef="Task_HistoRefus" targetRef="End_Refuse" />
+    <bpmn:sequenceFlow id="Flow_06gtjqg" sourceRef="Start_1" targetRef="Task_Declarer" />
+    <bpmn:startEvent id="Start_1" name="Demande d’ajustement reçue">
+      <bpmn:outgoing>Flow_06gtjqg</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_1" />
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_Declarer" name="Déclarer écart, casse ou perte">
+      <bpmn:incoming>F7</bpmn:incoming>
+      <bpmn:incoming>Flow_06gtjqg</bpmn:incoming>
+      <bpmn:outgoing>F4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_Verifier" name="Vérifier motif et quantité">
+      <bpmn:incoming>F4</bpmn:incoming>
+      <bpmn:outgoing>F5</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gw_Donnees" name="Données valides ?">
+      <bpmn:incoming>F5</bpmn:incoming>
+      <bpmn:outgoing>F6</bpmn:outgoing>
+      <bpmn:outgoing>F7</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_Valider" name="Valider l’ajustement">
+      <bpmn:incoming>F8</bpmn:incoming>
+      <bpmn:outgoing>F10</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gw_Approuve" name="Ajustement approuvé ?">
+      <bpmn:incoming>F10</bpmn:incoming>
+      <bpmn:outgoing>F11</bpmn:outgoing>
+      <bpmn:outgoing>F12</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+      <bpmndi:BPMNShape id="Participant_1_di" bpmnElement="Participant_1" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1740" height="570" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Sys_di" bpmnElement="Lane_Sys" isHorizontal="true">
+        <dc:Bounds x="190" y="360" width="1710" height="290" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Resp_di" bpmnElement="Lane_Resp" isHorizontal="true">
+        <dc:Bounds x="190" y="220" width="1710" height="140" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Mag_di" bpmnElement="Lane_Mag" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1710" height="140" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Validation_di" bpmnElement="Gw_Validation" isMarkerVisible="true">
+        <dc:Bounds x="945" y="425" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="920" y="482" width="100" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_MAJ_di" bpmnElement="Task_MAJ">
+        <dc:Bounds x="1350" y="410" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Compta_di" bpmnElement="Task_Compta">
+        <dc:Bounds x="1520" y="410" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Histo_di" bpmnElement="Task_Histo">
+        <dc:Bounds x="1670" y="410" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Termine_di" bpmnElement="End_Termine">
+        <dc:Bounds x="1802" y="432" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1786" y="475" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Notifier_di" bpmnElement="Task_Notifier">
+        <dc:Bounds x="1350" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_HistoRefus_di" bpmnElement="Task_HistoRefus">
+        <dc:Bounds x="1520" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Refuse_di" bpmnElement="End_Refuse">
+        <dc:Bounds x="1802" y="542" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1786" y="585" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_1_di" bpmnElement="Start_1">
+        <dc:Bounds x="262" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="249" y="175" width="63" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Declarer_di" bpmnElement="Task_Declarer">
+        <dc:Bounds x="460" y="110" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Verifier_di" bpmnElement="Task_Verifier">
+        <dc:Bounds x="470" y="410" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Donnees_di" bpmnElement="Gw_Donnees" isMarkerVisible="true">
+        <dc:Bounds x="755" y="425" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="482" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Valider_di" bpmnElement="Task_Valider">
+        <dc:Bounds x="1080" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Approuve_di" bpmnElement="Gw_Approuve" isMarkerVisible="true">
+        <dc:Bounds x="1315" y="265" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1330" y="255" width="100" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F4_di" bpmnElement="F4">
+        <di:waypoint x="520" y="190" />
+        <di:waypoint x="520" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F5_di" bpmnElement="F5">
+        <di:waypoint x="570" y="450" />
+        <di:waypoint x="755" y="450" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F6_di" bpmnElement="F6">
+        <di:waypoint x="805" y="450" />
+        <di:waypoint x="945" y="450" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="865" y="432" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F7_di" bpmnElement="F7">
+        <di:waypoint x="780" y="425" />
+        <di:waypoint x="780" y="150" />
+        <di:waypoint x="560" y="150" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="774" y="277" width="52" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F8_di" bpmnElement="F8">
+        <di:waypoint x="970" y="425" />
+        <di:waypoint x="970" y="290" />
+        <di:waypoint x="1080" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="978" y="323" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F9_di" bpmnElement="F9">
+        <di:waypoint x="995" y="450" />
+        <di:waypoint x="1350" y="450" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1160" y="432" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F10_di" bpmnElement="F10">
+        <di:waypoint x="1180" y="290" />
+        <di:waypoint x="1315" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F11_di" bpmnElement="F11">
+        <di:waypoint x="1340" y="315" />
+        <di:waypoint x="1340" y="363" />
+        <di:waypoint x="1400" y="363" />
+        <di:waypoint x="1400" y="410" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1348" y="321" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F12_di" bpmnElement="F12">
+        <di:waypoint x="1320" y="295" />
+        <di:waypoint x="1320" y="625" />
+        <di:waypoint x="1400" y="625" />
+        <di:waypoint x="1400" y="600" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1270" y="514" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F13_di" bpmnElement="F13">
+        <di:waypoint x="1450" y="450" />
+        <di:waypoint x="1520" y="450" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F14_di" bpmnElement="F14">
+        <di:waypoint x="1620" y="450" />
+        <di:waypoint x="1670" y="450" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F15_di" bpmnElement="F15">
+        <di:waypoint x="1770" y="450" />
+        <di:waypoint x="1802" y="450" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F16_di" bpmnElement="F16">
+        <di:waypoint x="1450" y="560" />
+        <di:waypoint x="1520" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F17_di" bpmnElement="F17">
+        <di:waypoint x="1620" y="560" />
+        <di:waypoint x="1802" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06gtjqg_di" bpmnElement="Flow_06gtjqg">
+        <di:waypoint x="298" y="150" />
+        <di:waypoint x="460" y="150" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_gestion_articles" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:participant id="Participant_1" name="Gestion des articles" processRef="Process_1" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_1">
+      <bpmn:lane id="Lane_1" name="Responsable stock">
+        <bpmn:flowNodeRef>StartEvent_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_u1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_u2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_u3</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_2" name="Système">
+        <bpmn:flowNodeRef>Activity_a5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_gr</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_a6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_a7</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_e</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_s" name="Besoin de créer ou modifier un article">
+      <bpmn:outgoing>Flow_s_u1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Activity_u1" name="Saisir la fiche article (référence, désignation, catégorie)">
+      <bpmn:incoming>Flow_s_u1</bpmn:incoming>
+      <bpmn:outgoing>Flow_u1_u2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_u2" name="Définir le seuil minimum et l'unité de stock">
+      <bpmn:incoming>Flow_u1_u2</bpmn:incoming>
+      <bpmn:outgoing>Flow_u2_a5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Activity_a5" name="Vérifier la saisie (unicité, champs obligatoires)">
+      <bpmn:incoming>Flow_u2_a5</bpmn:incoming>
+      <bpmn:incoming>Flow_u3_a5</bpmn:incoming>
+      <bpmn:outgoing>Flow_a5_gr</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_gr" name="Saisie valide ?">
+      <bpmn:incoming>Flow_a5_gr</bpmn:incoming>
+      <bpmn:outgoing>Flow_gr_u3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_gr_a6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Activity_u3" name="Corriger la saisie">
+      <bpmn:incoming>Flow_gr_u3</bpmn:incoming>
+      <bpmn:outgoing>Flow_u3_a5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Activity_a6" name="Enregistrer l'article">
+      <bpmn:incoming>Flow_gr_a6</bpmn:incoming>
+      <bpmn:outgoing>Flow_a6_a7</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_ds1">
+        <bpmn:targetRef>DataStoreReference_ds1</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_a7" name="Historiser la modification de la fiche">
+      <bpmn:incoming>Flow_a6_a7</bpmn:incoming>
+      <bpmn:outgoing>Flow_a7_e</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndEvent_e" name="Article enregistré">
+      <bpmn:incoming>Flow_a7_e</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_s_u1" sourceRef="StartEvent_s" targetRef="Activity_u1" />
+    <bpmn:sequenceFlow id="Flow_u1_u2" sourceRef="Activity_u1" targetRef="Activity_u2" />
+    <bpmn:sequenceFlow id="Flow_u2_a5" sourceRef="Activity_u2" targetRef="Activity_a5" />
+    <bpmn:sequenceFlow id="Flow_a5_gr" sourceRef="Activity_a5" targetRef="Gateway_gr" />
+    <bpmn:sequenceFlow id="Flow_gr_u3" name="Non" sourceRef="Gateway_gr" targetRef="Activity_u3" />
+    <bpmn:sequenceFlow id="Flow_u3_a5" sourceRef="Activity_u3" targetRef="Activity_a5" />
+    <bpmn:sequenceFlow id="Flow_gr_a6" name="Oui" sourceRef="Gateway_gr" targetRef="Activity_a6" />
+    <bpmn:sequenceFlow id="Flow_a6_a7" sourceRef="Activity_a6" targetRef="Activity_a7" />
+    <bpmn:sequenceFlow id="Flow_a7_e" sourceRef="Activity_a7" targetRef="EndEvent_e" />
+    <bpmn:dataStoreReference id="DataStoreReference_ds1" name="Référentiel articles" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+      <bpmndi:BPMNShape id="Participant_1_di" bpmnElement="Participant_1" isHorizontal="true">
+        <dc:Bounds x="100" y="60" width="1620" height="360" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1_di" bpmnElement="Lane_1" isHorizontal="true">
+        <dc:Bounds x="130" y="60" width="1590" height="140" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_2_di" bpmnElement="Lane_2" isHorizontal="true">
+        <dc:Bounds x="130" y="200" width="1590" height="220" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_s_di" bpmnElement="StartEvent_s">
+        <dc:Bounds x="232" y="112" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_u1_di" bpmnElement="Activity_u1">
+        <dc:Bounds x="390" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_u2_di" bpmnElement="Activity_u2">
+        <dc:Bounds x="580" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_a5_di" bpmnElement="Activity_a5">
+        <dc:Bounds x="770" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_gr_di" bpmnElement="Gateway_gr" isMarkerVisible="true">
+        <dc:Bounds x="985" y="245" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_u3_di" bpmnElement="Activity_u3">
+        <dc:Bounds x="1150" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_a6_di" bpmnElement="Activity_a6">
+        <dc:Bounds x="1150" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_a7_di" bpmnElement="Activity_a7">
+        <dc:Bounds x="1340" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_e_di" bpmnElement="EndEvent_e">
+        <dc:Bounds x="1562" y="252" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStoreReference_ds1_di" bpmnElement="DataStoreReference_ds1">
+        <dc:Bounds x="1175" y="345" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_s_u1_di" bpmnElement="Flow_s_u1">
+        <di:waypoint x="268" y="130" />
+        <di:waypoint x="390" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_u1_u2_di" bpmnElement="Flow_u1_u2">
+        <di:waypoint x="490" y="130" />
+        <di:waypoint x="580" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_u2_a5_di" bpmnElement="Flow_u2_a5">
+        <di:waypoint x="680" y="130" />
+        <di:waypoint x="760" y="130" />
+        <di:waypoint x="760" y="270" />
+        <di:waypoint x="770" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_a5_gr_di" bpmnElement="Flow_a5_gr">
+        <di:waypoint x="870" y="270" />
+        <di:waypoint x="985" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_gr_u3_di" bpmnElement="Flow_gr_u3">
+        <di:waypoint x="1035" y="270" />
+        <di:waypoint x="1140" y="270" />
+        <di:waypoint x="1140" y="130" />
+        <di:waypoint x="1150" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_u3_a5_di" bpmnElement="Flow_u3_a5">
+        <di:waypoint x="1200" y="170" />
+        <di:waypoint x="1200" y="220" />
+        <di:waypoint x="820" y="220" />
+        <di:waypoint x="820" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_gr_a6_di" bpmnElement="Flow_gr_a6">
+        <di:waypoint x="1010" y="295" />
+        <di:waypoint x="1010" y="320" />
+        <di:waypoint x="1200" y="320" />
+        <di:waypoint x="1200" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_a6_a7_di" bpmnElement="Flow_a6_a7">
+        <di:waypoint x="1250" y="270" />
+        <di:waypoint x="1340" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_a7_e_di" bpmnElement="Flow_a7_e">
+        <di:waypoint x="1440" y="270" />
+        <di:waypoint x="1562" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_ds1_di" bpmnElement="DataOutputAssociation_ds1">
+        <di:waypoint x="1200" y="310" />
+        <di:waypoint x="1200" y="345" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
